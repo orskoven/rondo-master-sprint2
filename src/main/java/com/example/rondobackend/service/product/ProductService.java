@@ -46,5 +46,9 @@ public class ProductService implements IProductService {
     }
 
 
+    @Override
+    public Set<Product> findAllByisInSortimentTrue() {
+        return repo.findAllByisInSortimentTrue();
+    }
 }
 

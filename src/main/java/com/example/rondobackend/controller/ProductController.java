@@ -21,7 +21,7 @@ public class ProductController {
 
     @GetMapping("/allProducts")
     public ResponseEntity<Set> getProducts(){
-        Set<Product> products = productService.findAll();
+        Set<Product> products = productService.findAllByisInSortimentTrue();
         return ResponseEntity.ok(products);
     }
 
