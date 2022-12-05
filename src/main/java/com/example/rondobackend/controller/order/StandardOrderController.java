@@ -12,10 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @CrossOrigin
 @RestController
@@ -106,7 +103,7 @@ public class StandardOrderController {
 
         orders.forEach(order -> {
             //Orderl orderl = new Orderl(order.getId(),order.getAmount(),order.getProduct());
-            if(order.getProduct() == ""){
+            if(Objects.equals(order.getProduct(), "")){
                 System.out.println(order.getId());
                 orderService.deleteById(order.getId());
             }else if (order.getId() != null) {
