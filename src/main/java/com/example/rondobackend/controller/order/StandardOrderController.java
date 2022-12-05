@@ -72,52 +72,42 @@ public class StandardOrderController {
     }
 
     @PostMapping("/createOrder")
-    public ResponseEntity<String> createOrder(@RequestBody Orderl order, @RequestParam Long dailyOrderId){
-        Optional<DailyOrder> dailyOrder = dailyOrderService.findById(dailyOrderId);
-        if (dailyOrder.isPresent()){
-            order.setDailyOrder(dailyOrder.get());
-            orderService.save(order);
-            return new ResponseEntity<>("order oprettet", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("order ikke oprettet", HttpStatus.OK);
-        }
-    }
-/*
-    @PostMapping("updateOrder")
-    public ResponseEntity<String> updateOrder(@RequestBody List<Orderl> orders){
+    public ResponseEntity<String> createOrder(@RequestBody List<OrderDto> orders){
 
-        orders.forEach(order -> {
-            if (orderService.findById(order.getId()).isPresent() || order.getId() != null){
-                Orderl updatetOrder = orderService.findById(order.getId()).get();
-                //updatetOrder = order;
-                updatetOrder.setAmount(order.getAmount());
-                updatetOrder.setProduct(order.getProduct());
-                //updatetOrder.setDailyOrder(updatetOrder.getDailyOrder());
-                System.out.println(updatetOrder.getDailyOrder());
-                orderService.save(updatetOrder);
-            }else{
-                System.out.println(order.getDailyOrder());
-                orderService.save(new Orderl(order.getAmount(), order.getProduct(), dailyOrderService.findById(order.getDailyOrder().getId()).get()));
 
+        for (OrderDto order : orders) {
+            Orderl orderl = new Orderl();
+            Optional<DailyOrder> dailyOrder = dailyOrderService.findById(order.getDailyOrderId());
+
+            System.out.println("yes" + order.getDailyOrderId());
+            if (dailyOrder.isPresent()) {
+                orderl.setAmount(order.getAmount());
+                orderl.setProduct(order.getProduct());
+                orderl.setDailyOrder(dailyOrder.get());
+                orderService.save(orderl);
             }
-
-        });
-
-        return new ResponseEntity<>("ordrere ændrede", HttpStatus.OK);
+        }
+        return new ResponseEntity<>("order oprettet", HttpStatus.OK);
     }
 
- */
+    @PostMapping("/deleteOrder")
+    public ResponseEntity<String> deleteOrder(@RequestBody List<OrderDto> orders){
 
-
+        for (OrderDto order : orders) {
+            if (orderService.findById(order.getId()).isPresent()) {
+                orderService.deleteById(order.getId());
+            }
+        }
+        return new ResponseEntity<>("order slettet", HttpStatus.OK);
+    }
 
     @PostMapping("updateOrder")
     public ResponseEntity<String> updateOrder(@RequestBody List<OrderDto> orders){
 
         orders.forEach(order -> {
-            System.out.println(order.getId());
             //Orderl orderl = new Orderl(order.getId(),order.getAmount(),order.getProduct());
             if(order.getProduct() == ""){
-
+                System.out.println(order.getId());
                 orderService.deleteById(order.getId());
             }else if (order.getId() != null) {
                 Orderl orderl = new Orderl(order.getId(), order.getAmount(), order.getProduct());
@@ -128,9 +118,6 @@ public class StandardOrderController {
                 //updatetOrder.setDailyOrder(updatetOrder.getDailyOrder());
                 System.out.println(updatetOrder.getDailyOrder());
                 orderService.save(updatetOrder);
-            }else{
-                System.out.println(order.getDailyOrderId());
-                orderService.save(new Orderl(order.getAmount(), order.getProduct(), dailyOrderService.findById(order.getDailyOrderId()).get()));
             }
         });
 
@@ -142,7 +129,7 @@ public class StandardOrderController {
     @PostMapping("updateStandardOrder")
     public ResponseEntity<String> updateStandardOrder(@RequestBody StandardOrder standardOrder){
         StandardOrder updatetOrder = standardOrderService.findById(standardOrder.getId()).get();
-updatetOrder = standardOrder;
+        updatetOrder = standardOrder;
         standardOrderService.save(updatetOrder);
         return new ResponseEntity<>(standardOrder + " ændret til: " + updatetOrder, HttpStatus.OK);
     }
